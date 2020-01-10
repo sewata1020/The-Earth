@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class GoogleMaps extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class GoogleMaps extends StatefulWidget {
 
 class _GoogleMapsState extends State<GoogleMaps> {
   LocationData currentLocation;
+
   // StreamSubscription<LocationData> locationSubscription;
 
   Location _locationService = new Location();
@@ -43,30 +46,34 @@ class _GoogleMapsState extends State<GoogleMaps> {
       return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("Flutter Maps"),
+            title: Text('Maps Sample App'),
+            backgroundColor: Colors.green[700],
           ),
           body: GoogleMap(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition( // 最初のカメラ位置
-              target: LatLng(
-                  currentLocation.latitude, currentLocation.longitude),
+            initialCameraPosition: CameraPosition(
+              target:
+              LatLng(currentLocation.latitude, currentLocation.longitude),
               zoom: 17.0,
             ),
+            myLocationEnabled: true,
           ),
         ),
       );
     }
   }
+
   void initPlatformState() async {
     LocationData myLocation;
     try {
       myLocation = await _locationService.getLocation();
       error = "";
-    }on PlatformException catch(e){
-      if(e.code == 'PERMISSION_DENITED')
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENITED')
         error = 'Permission denited';
-      else if(e.code == 'PERMISSION_DENITED_NEVER_ASK')
-        error = 'Permission denited - please ask the user to enable it from the app settings';
+      else if (e.code == 'PERMISSION_DENITED_NEVER_ASK')
+        error =
+        'Permission denited - please ask the user to enable it from the app settings';
       myLocation = null;
     }
     setState(() {
